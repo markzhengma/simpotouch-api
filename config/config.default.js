@@ -29,6 +29,11 @@ module.exports = appInfo => {
     },
   };
 
+  config.wx = {
+    appid: 'wx3a27f7cc03bce8d9',
+    secret: '88557736e0ec52183420079f487ec294'
+  }
+
   config.mongoose = {
     url: process.env.EGG_MONGODB_URL || 'mongodb://127.0.0.1:27017/simpotouch',
     server: {

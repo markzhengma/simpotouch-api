@@ -5,11 +5,19 @@ const Controller = require('egg').Controller;
 class EventController extends Controller {
   async findAll(){
     const data = await this.ctx.service.event.findAll();
-    this.ctx.body = data;
+    if(data){
+        this.ctx.body = { code: 200, data: data};
+      } else {
+        this.ctx.body = { code: 400, data: 'find failed'};
+      }
   };
   async findWithId(){
     const data = await this.ctx.service.event.findWithId(this.ctx.params.id);
-    this.ctx.body = data;
+    if(data){
+        this.ctx.body = { code: 200, data: data};
+      } else {
+        this.ctx.body = { code: 400, data: 'find failed'};
+      }
   };
   async create(){
     try{
@@ -45,7 +53,11 @@ class EventController extends Controller {
       };
 
       const res = await this.ctx.service.event.create(eventData);
-      this.ctx.body = res;
+      if(res){
+        this.ctx.body = { code: 200, data: res};
+      } else {
+        this.ctx.body = { code: 400, data: 'create failed'};
+      }
     } catch(err) {
       console.log(err)
       this.ctx.body = { code: 422, data: err }
