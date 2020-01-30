@@ -25,7 +25,7 @@ class AccountController extends Controller {
               resolve(this.ctx.service.session.updateSession(res.data.openid, res.data.session_key));
             })
               .then(data => {
-                this.ctx.body = { code: 200, data: data.sid};
+                this.ctx.body = { code: 200, data: { sid: data.sid, uid: data.uid }};
               })
               .catch(err => {
                 this.ctx.logger.error(new Error(err));
