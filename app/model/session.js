@@ -5,15 +5,11 @@ module.exports = app => {
   const Schema = mongoose.Schema;
 
   const SessionSchema = new Schema({
-    uid: {
-      type: String,
-      default: ''
-    },
-    sid: {
+    openid: {
       type: String,
       default: '',
     },
-    openid: {
+    sid: {
       type: String,
       default: '',
     },

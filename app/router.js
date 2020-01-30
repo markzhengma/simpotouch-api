@@ -13,5 +13,9 @@ module.exports = app => {
     router.get('/event/single/:id', controller.v1.event.findWithId);
 
     router.get('/account/wxlogin', controller.v1.account.wxLogin);
-  })
+
+    router.post('/user/single', controller.v1.user.createOne);
+    router.get('/user/single', controller.v1.user.findOne);
+    router.get('/user/self', controller.v1.user.findCurrent);
+  });
 };

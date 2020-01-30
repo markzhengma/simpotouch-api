@@ -15,27 +15,32 @@ class AccountController extends Controller {
       const secret = this.config.wx.secret;
 
       return new Promise(resolve => {
-        resolve(this.service.account.wxLogin(appid, secret, code));
+        resolve(this.ctx.service.account.wxLogin(appid, secret, code));
       })
         .then(res => {
           if (res.data.errmsg) {
             this.ctx.body = { code: 410, data: res.data.errmsg }
           } else if (res.data.openid) {
-            return new Promise(resolve => {
-              resolve(this.ctx.service.session.updateSession(res.data.openid, res.data.session_key));
-            })
+            return Promise.all([
+              this.ctx.service.session.updateSession(res.data.openid, res.data.session_key),
+              this.ctx.service.user.findUser({openid: res.data.openid})
+            ])
               .then(data => {
-                this.ctx.body = { code: 200, data: { sid: data.sid, uid: data.uid }};
+                if(!data[1]){
+                  this.ctx.body = { code: 200, data: { sid: data[0].sid }};
+                } else {
+                  this.ctx.body = { code: 200, data: { sid: data[0].sid, uid: data[1].uid }}
+                }
               })
               .catch(err => {
                 this.ctx.logger.error(new Error(err));
-                this.ctx.body = { code: 411, data: 'database process error'};
+                this.ctx.body = { code: 500, data: 'internal server error'};
               });
           }
         })
         .catch(err => {
           this.ctx.logger.error(new Error(err));
-          this.ctx.body = { code: 411, data: 'database process error'};
+          this.ctx.body = { code: 500, data: 'internal server error'};
         });
     } catch (err) {
       this.ctx.logger.error(new Error(err));
