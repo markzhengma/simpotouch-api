@@ -11,10 +11,6 @@ module.exports = app => {
       type: String,
       default: '',
     },
-    tags: {
-      type: Array,
-      default: []
-    },
     location: {
       type: String,
       default: '',

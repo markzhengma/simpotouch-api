@@ -34,14 +34,13 @@ class EventController extends Controller {
         info: 'string',
       }, this.ctx.request.body);
 
-      const { userid, title, tags, location, start_date, end_date, start_time, end_time, total_attend, info } = this.ctx.request.body;
+      const { userid, title, location, start_date, end_date, start_time, end_time, total_attend, info } = this.ctx.request.body;
 
       // this.ctx.body = this.ctx.request.body;
 
       const eventData = {
         userid,
         title,
-        tags,
         location,
         start_date,
         end_date,

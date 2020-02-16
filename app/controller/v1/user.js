@@ -78,9 +78,7 @@ class UserController extends Controller {
     const updateData = this.ctx.request.body;
     const { sid, uid } = this.ctx.request.header;
     const sessionData = await this.ctx.service.session.findSession(sid);
-    console.log('sessionData: ', sessionData);
     const userData = await this.ctx.service.user.findUser({ uid });
-    console.log('userData: ', userData);
     if(!sessionData || !userData || (sessionData && userData) && sessionData.openid !== userData.openid) {
       this.ctx.body = { code: 500, data: 'internal server error'};
     } else {
