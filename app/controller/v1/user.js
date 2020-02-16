@@ -29,7 +29,11 @@ class UserController extends Controller {
             data: { 
               uid: res.uid, 
               username: res.username, 
-              phone: res.phone 
+              phone: res.phone,
+              intro: res.intro,
+              gender: res.gender,
+              city: res.city,
+              email: res.email,
             } 
           };
         };
@@ -67,6 +71,39 @@ class UserController extends Controller {
     } catch (err) {
       console.log(err);
       this.ctx.body = { code: 422, data: err };
+    }
+  };
+
+  async updateOne(){
+    const updateData = this.ctx.request.body;
+    const { sid, uid } = this.ctx.request.header;
+    const sessionData = await this.ctx.service.session.findSession(sid);
+    console.log('sessionData: ', sessionData);
+    const userData = await this.ctx.service.user.findUser({ uid });
+    console.log('userData: ', userData);
+    if(!sessionData || !userData || (sessionData && userData) && sessionData.openid !== userData.openid) {
+      this.ctx.body = { code: 500, data: 'internal server error'};
+    } else {
+      const res = await this.ctx.service.user.updateUser(uid, updateData);
+      if(res.ok === 1) {
+        const updatedUser = await this.ctx.service.user.findUser({ uid });
+        if(!updatedUser) {
+          this.ctx.body = { code: 500, data: 'internal server error'};
+        } else {
+          const returnData = {
+            uid: updatedUser.uid,
+            username: updatedUser.username,
+            phone: updatedUser.phone,
+            intro: updatedUser.intro,
+            gender: updatedUser.gender,
+            city: updatedUser.city,
+            email: updatedUser.email
+          }
+          this.ctx.body = { code: 200, data: returnData };
+        }
+      } else {
+        this.ctx.body = { code: 500, data: res};
+      }
     }
   }
 }

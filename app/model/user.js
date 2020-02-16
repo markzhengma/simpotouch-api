@@ -21,6 +21,22 @@ module.exports = app => {
       type: String,
       default: '',
     },
+    intro: {
+      type: String,
+      default: ''
+    },
+    gender: {
+      type: String,
+      default: ''
+    },
+    city: {
+      type: String,
+      default: ''
+    },
+    email: {
+      type: String,
+      default: ''
+    },
   });
 
   return mongoose.model('User', UserSchema);

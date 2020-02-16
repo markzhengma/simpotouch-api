@@ -15,6 +15,7 @@ module.exports = app => {
     router.get('/account/wxlogin', controller.v1.account.wxLogin);
 
     router.post('/user/single', controller.v1.user.createOne);
+    router.put('/user/single', controller.v1.user.updateOne);
     router.get('/user/single/:uid', controller.v1.user.findOne);
     router.get('/user/self', controller.v1.user.findCurrent);
   });

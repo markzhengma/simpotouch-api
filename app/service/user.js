@@ -7,7 +7,7 @@ class UserService extends Service {
   async findUser(params) {
     const res = await this.ctx.model.User.findOne(params);
     return res;
-  }
+  };
 
   async createUser(user) {
     const { openid, username, phone } = user;
@@ -19,6 +19,11 @@ class UserService extends Service {
         username,
         phone
       });
+    return res;
+  };
+
+  async updateUser(uid, data) {
+    const res = await this.ctx.model.User.updateOne( { uid }, data);
     return res;
   }
 }
