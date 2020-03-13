@@ -27,6 +27,7 @@
   },
   "scripts": {
     "start": "egg-scripts start --daemon --title=egg-server-simpotouch",
+    "fg-start": "egg-scripts start --title=egg-server-simpotouch",
     "stop": "egg-scripts stop --title=egg-server-simpotouch",
     "dev": "egg-bin dev",
     "debug": "egg-bin debug",
