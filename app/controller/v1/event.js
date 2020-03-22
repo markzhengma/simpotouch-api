@@ -26,15 +26,14 @@ class EventController extends Controller {
         title: 'string',
         tags: 'array',
         location: 'string',
-        start_date: 'string',
-        end_date: 'string',
+        date: 'string',
         start_time: 'string',
         end_time: 'string',
         total_attend: 'number',
         info: 'string',
       }, this.ctx.request.body);
 
-      const { userid, title, location, start_date, end_date, start_time, end_time, total_attend, info } = this.ctx.request.body;
+      const { userid, title, location, date, start_time, end_time, total_attend, info } = this.ctx.request.body;
 
       // this.ctx.body = this.ctx.request.body;
 
@@ -42,8 +41,7 @@ class EventController extends Controller {
         userid,
         title,
         location,
-        start_date,
-        end_date,
+        date,
         start_time,
         end_time,
         total_attend,

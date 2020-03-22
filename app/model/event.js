@@ -15,11 +15,7 @@ module.exports = app => {
       type: String,
       default: '',
     },
-    start_date: {
-      type: String,
-      default: '',
-    },
-    end_date: {
+    date: {
       type: String,
       default: '',
     },
