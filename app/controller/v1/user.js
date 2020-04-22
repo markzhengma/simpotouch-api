@@ -17,7 +17,7 @@ class UserController extends Controller {
     const { sid } = this.ctx.request.header;
     const sessionData = await this.ctx.service.session.findSession(sid);
       if(!sessionData){
-        this.ctx.body = { code: 500, data: 'internal server error'};
+        this.ctx.body = { code: 400, data: 'session not found' };
       } else {
         const openid = sessionData.openid;
         const res = await this.ctx.service.user.findUser({ openid });
