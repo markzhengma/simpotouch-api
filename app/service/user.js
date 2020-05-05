@@ -9,13 +9,12 @@ class UserService extends Service {
     return res;
   };
 
-  async createUser(user) {
+  async createUser(user, uid) {
     const { openid, username, phone } = user;
-    const objId = new mongoose.Types.ObjectId();
     const res = await this.ctx.model.User.create(
       {
         openid,
-        uid: objId.toString(),
+        uid,
         username,
         phone
       });

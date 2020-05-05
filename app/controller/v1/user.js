@@ -1,6 +1,7 @@
 'use strict';
 
 const Controller = require('egg').Controller;
+const md5 = require('md5');
 
 class UserController extends Controller {
   async findOne(){
@@ -55,7 +56,8 @@ class UserController extends Controller {
         this.ctx.body = { code: 500, data: 'internal server error'};
       } else {
         const openid = sessionData.openid;
-        const res = await this.ctx.service.user.createUser({ username, openid, phone });
+        const uid = md5(openid);
+        const res = await this.ctx.service.user.createUser({ username, openid, phone }, uid);
         if(!res){
           this.ctx.body = { code: 500, data: 'internal server error' };
         } else {
