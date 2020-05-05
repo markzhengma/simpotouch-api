@@ -27,9 +27,9 @@ class AccountController extends Controller {
             ])
               .then(data => {
                 if(!data[1]){
-                  this.ctx.body = { code: 200, data: { sid: data[0].sid }};
+                  this.ctx.body = { code: 200, data: { sid: data[0].sid, uid: '', is_new: true }};
                 } else {
-                  this.ctx.body = { code: 200, data: { sid: data[0].sid, uid: data[1].uid }}
+                  this.ctx.body = { code: 200, data: { sid: data[0].sid, uid: data[1].uid, is_new: false }}
                 }
               })
               .catch(err => {

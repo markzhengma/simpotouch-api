@@ -22,11 +22,12 @@ class UserController extends Controller {
         const openid = sessionData.openid;
         const res = await this.ctx.service.user.findUser({ openid });
         if(!res) {
-          this.ctx.body = { code: 400, data: 'find failed' };
+          this.ctx.body = { code: 200, data: { is_new: true } };
         } else {
           this.ctx.body = { 
             code: 200, 
             data: { 
+              is_new: false,
               uid: res.uid, 
               username: res.username, 
               phone: res.phone,
