@@ -15,34 +15,38 @@ class UserController extends Controller {
   };
 
   async findCurrent(){
-    const { sid, iv } = this.ctx.request.header;
-    const encryptedData = this.ctx.request.header.encrypted_data
-    const sessionData = await this.ctx.service.session.findSession(sid);
-    if(!sessionData){
-      this.ctx.body = { code: 400, data: 'session not found' };
-    } else {
-      const sessionKey = sessionData.session_key;
-      const decryptedUserInfo = await this.ctx.getOpenId(encryptedData, sessionKey, iv);
-      const openid = sessionData.openid;
-      const res = await this.ctx.service.user.findUser({ openid });
-      if(!res) {
-        this.ctx.body = { code: 200, data: { is_new: true } };
+    try {
+      const { sid, iv } = this.ctx.request.header;
+      const encryptedData = this.ctx.request.header.encrypted_data
+      const sessionData = await this.ctx.service.session.findSession(sid);
+      if(!sessionData){
+        this.ctx.body = { code: 400, data: 'session not found' };
       } else {
-        this.ctx.body = { 
-          code: 200, 
-          data: { 
-            is_new: false,
-            uid: res.uid, 
-            username: res.username, 
-            phone: res.phone,
-            intro: res.intro,
-            gender: res.gender,
-            city: res.city,
-            email: res.email,
-          }
+        const sessionKey = sessionData.session_key;
+        const decryptedUserInfo = await this.ctx.getOpenId(encryptedData, sessionKey, iv);
+        const openid = sessionData.openid;
+        const res = await this.ctx.service.user.findUser({ openid });
+        if(!res) {
+          this.ctx.body = { code: 200, data: { is_new: true } };
+        } else {
+          this.ctx.body = { 
+            code: 200, 
+            data: { 
+              is_new: false,
+              uid: res.uid, 
+              username: res.username, 
+              phone: res.phone,
+              intro: res.intro,
+              gender: res.gender,
+              city: res.city,
+              email: res.email,
+            }
+          };
         };
       };
-    };
+    } catch(err) {
+      this.ctx.body = { code: 500, data: err }
+    }
   };
 
   async createOne(){
