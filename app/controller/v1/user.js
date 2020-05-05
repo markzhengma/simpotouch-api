@@ -26,7 +26,7 @@ class UserController extends Controller {
       const openid = sessionData.openid;
       const res = await this.ctx.service.user.findUser({ openid });
       if(!res) {
-        this.ctx.body = { code: 200, data: { is_new: true } };
+        this.ctx.body = { code: 200, data: { is_new: true }, decryptedUserInfo };
       } else {
         this.ctx.body = { 
           code: 200, 
@@ -39,7 +39,8 @@ class UserController extends Controller {
             gender: res.gender,
             city: res.city,
             email: res.email,
-          } 
+          },
+          decryptedUserInfo
         };
       };
     };
