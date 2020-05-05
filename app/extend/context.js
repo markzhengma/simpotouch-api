@@ -3,7 +3,8 @@
 module.exports = {
   async getOpenId(encryptedData, sessionKey, iv) {
     const WXBizDataCrypt = require('../../lib/WXBizDataCrypt');
-    const appid = this.config.wx.appid;
+
+    const appid = this.app.config.wx.appid;
 
     const pc = new WXBizDataCrypt(appid, sessionKey);
 
