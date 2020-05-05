@@ -22,8 +22,8 @@ class UserController extends Controller {
       if(!sessionData){
         this.ctx.body = { code: 400, data: 'session not found' };
       } else {
-        const sessionKey = sessionData.session_key;
-        const decryptedUserInfo = await this.ctx.getOpenId(encryptedData, sessionKey, iv);
+        // const sessionKey = sessionData.session_key;
+        // const decryptedUserInfo = await this.ctx.getOpenId(encryptedData, sessionKey, iv);
         const openid = sessionData.openid;
         const res = await this.ctx.service.user.findUser({ openid });
         if(!res) {
