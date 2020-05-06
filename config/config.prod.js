@@ -25,6 +25,5 @@ module.exports = () => {
 
   return {
     ...config,
-    ...userConfig,
   };
 };
