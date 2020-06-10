@@ -18,8 +18,8 @@ module.exports = app => {
       default: '',
     },
     expire: {
-      type: Date,
-      default: '',
+      type: Number,
+      default: 0,
     },
   });
 

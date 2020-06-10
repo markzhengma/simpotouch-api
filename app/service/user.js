@@ -24,6 +24,18 @@ class UserService extends Service {
   async updateUser(uid, data) {
     const res = await this.ctx.model.User.updateOne( { uid }, data);
     return res;
+  };
+
+  async updateUserWxInfoWithOpenid(uid, openid, wxInfoStr) {
+    const res = await this.ctx.model.User.updateOne(
+      { 
+        openid,
+        uid
+      },
+      { wxuserinfo: wxInfoStr },
+      { upsert: true }
+    );
+    return res;
   }
 }
 

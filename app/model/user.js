@@ -37,6 +37,10 @@ module.exports = app => {
       type: String,
       default: ''
     },
+    wxuserinfo: {
+      type: String,
+      default: '',
+    }
   });
 
   return mongoose.model('User', UserSchema);

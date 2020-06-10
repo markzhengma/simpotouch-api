@@ -20,13 +20,22 @@ module.exports = appInfo => {
 
   config.security = {
     csrf: {
-      ignoreJSON: true,
+      enable: false
     },
   };
 
   config.wx = {
     appid: 'wx3a27f7cc03bce8d9',
     secret: '88557736e0ec52183420079f487ec294'
+  }
+
+  config.keychain = {
+    user: {
+      salt: 'user2020_simpotouch'
+    },
+    session: {
+      key: 'simpotouch_2020'
+    }
   }
 
   return {
