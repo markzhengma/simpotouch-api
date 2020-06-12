@@ -29,18 +29,21 @@ class UserController extends Controller {
             ])
               .then(data => {
                 if(!data[1] || !data[1].username){
-                  this.ctx.body = { code: 200, data: { is_new: true, uid: '', sid: data[0].sid, timestamp: data[0].timestamp, user_info: '' }};
+                  this.ctx.body = { code: 200, data: { is_new: true, uid: '', sid: data[0].sid, timestamp: data[0].timestamp }};
                 } else {
-                  const userInfo = {
+                  const result = {
+                    is_new: false, 
+                    uid: data[1].uid, 
+                    sid: data[0].sid, 
+                    timestamp: data[0].timestamp,
                     username: data[1].username,
                     phone: data[1].phone,
                     intro: data[1].intro,
                     gender: data[1].gender,
                     city: data[1].city,
                     email: data[1].email,
-                    wxuserinfo: JSON.parse(data[1].wxuserinfo),
                   }
-                  this.ctx.body = { code: 200, data: { is_new: false, uid: data[1].uid, sid: data[0].sid, timestamp: data[0].timestamp, user_info: userInfo }}
+                  this.ctx.body = { code: 200, data: result }
                 }
               })
               .catch(err => {
@@ -79,23 +82,12 @@ class UserController extends Controller {
         const uid = md5(openid+this.config.keychain.user.salt);
         await this.ctx.service.user.updateUserWxInfoWithOpenid(uid, openid, JSON.stringify(decryptedUserInfo));
         const userData = await this.ctx.service.user.findUser({ uid });
-        if(!userData) {
-          this.ctx.body = { 
-            code: 200, 
-            data: {
-              uid, 
-              sid, 
-              is_new: true 
-            }
-          }
-        } else {
-          this.ctx.body = { 
-            code: 200, 
-            data: { 
-              uid: userData.uid,
-              sid,
-              is_new: false
-            }
+        this.ctx.body = { 
+          code: 200, 
+          data: {
+            uid, 
+            sid, 
+            is_new: userData && userData.username !== '' ? false : true
           }
         }
       }
@@ -159,10 +151,9 @@ class UserController extends Controller {
 
       const { uid, sid, username, phone } = this.ctx.request.body;
       const sessionData = await this.ctx.service.session.findSession(sid);
-      if(sessionData.code !== 200){
+      if(!sessionData || sessionData.code !== 200){
         this.ctx.body = sessionData;
       } else if(uid !== md5(sessionData.data.openid+this.config.keychain.user.salt)){
-        console.log(uid)
         this.ctx.body = { code: 410, data: 'auth failed, please check your uid and sid' };
       } else {
         const res = await this.ctx.service.user.updateUsernameAndPhone(uid, { username, phone });
@@ -193,11 +184,17 @@ class UserController extends Controller {
 
   async updateOne(){
     const updateData = this.ctx.request.body;
-    const { sid, uid } = this.ctx.request.header;
+    const { sid, uid } = updateData;
+
     const sessionData = await this.ctx.service.session.findSession(sid);
     const userData = await this.ctx.service.user.findUser({ uid });
-    if(!sessionData || !userData || (sessionData && userData) && sessionData.openid !== userData.openid) {
-      this.ctx.body = { code: 500, data: 'internal server error'};
+    
+    if(!sessionData || sessionData.code !== 200) {
+      this.ctx.body = sessionData;
+    } else if (!userData){
+      this.ctx.body = { code: 400, data: 'user not exist' };
+    } else if (uid !== md5(sessionData.data.openid+this.config.keychain.user.salt)){
+      this.ctx.body = { code: 410, data: 'auth failed, please check your uid and sid' };
     } else {
       const res = await this.ctx.service.user.updateUser(uid, updateData);
       if(res.ok === 1) {
