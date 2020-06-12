@@ -9,15 +9,12 @@ class UserService extends Service {
     return res;
   };
 
-  async createUser(user, uid) {
-    const { openid, username, phone } = user;
-    const res = await this.ctx.model.User.create(
-      {
-        openid,
-        uid,
-        username,
-        phone
-      });
+  async updateUsernameAndPhone(uid, user) {
+    const { username, phone } = user;
+    const res = await this.ctx.model.User.updateOne({ uid }, {
+      username,
+      phone
+    });
     return res;
   };
 

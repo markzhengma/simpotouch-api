@@ -11,6 +11,7 @@ class UserController extends Controller {
       }, this.ctx.request.header);
 
       const code = this.ctx.request.header.code;
+      console.log('loging in')
 
       const appid = this.config.wx.appid;
       const secret = this.config.wx.secret;
@@ -58,11 +59,11 @@ class UserController extends Controller {
     }
   };
 
-  async getUserInfoWithSidAndTimestamp(){
+  async initUserWithSidAndTimestamp(){
     const { sid, timestamp, encryptedData, iv } = this.ctx.request.body;
-    console.log(this.ctx.request.body)
+    console.log('initiating user')
 
-    const sessionData = await this.ctx.service.session.findSession(sid, timestamp);
+    const sessionData = await this.ctx.service.session.validateSid(sid, timestamp);
     if(sessionData.code !== 200){
       this.ctx.body = sessionData;
     } else {
@@ -118,8 +119,8 @@ class UserController extends Controller {
       const { uid, sid } = this.ctx.request.query;
       const sessionData = await this.ctx.service.session.findSession(sid);
 
-      if(!sessionData){
-        this.ctx.body = { code: 410, data: 'auth failed, please check your uid and sid' };
+      if(sessionData.code !== 200){
+        this.ctx.body = sessionData;
       } else {
         const openid = sessionData.data.openid;
         if(uid !== md5(openid+this.config.keychain.user.salt)){
@@ -131,6 +132,7 @@ class UserController extends Controller {
             data: { 
               is_new: res.username ? false : true,
               uid: res.uid || '', 
+              sid: sid,
               username: res.username || '', 
               phone: res.phone || '',
               intro: res.intro || '',
@@ -149,29 +151,37 @@ class UserController extends Controller {
   async createOne(){
     try{
       this.ctx.validate({
+        uid: 'string',
+        sid: 'string',
         username: 'string',
         phone: 'string',
       }, this.ctx.request.body);
 
-      const { username, phone } = this.ctx.request.body;
-      const { sid } = this.ctx.request.header;
+      const { uid, sid, username, phone } = this.ctx.request.body;
       const sessionData = await this.ctx.service.session.findSession(sid);
-      if(!sessionData){
-        this.ctx.body = { code: 500, data: 'internal server error'};
+      if(sessionData.code !== 200){
+        this.ctx.body = sessionData;
+      } else if(uid !== md5(sessionData.data.openid+this.config.keychain.user.salt)){
+        console.log(uid)
+        this.ctx.body = { code: 410, data: 'auth failed, please check your uid and sid' };
       } else {
-        const openid = sessionData.openid;
-        const uid = md5(openid+this.config.keychain.user.salt);
-        const res = await this.ctx.service.user.createUser({ username, openid, phone }, uid);
+        const res = await this.ctx.service.user.updateUsernameAndPhone(uid, { username, phone });
         if(!res){
           this.ctx.body = { code: 500, data: 'internal server error' };
         } else {
+          const userData = await this.ctx.service.user.findUser({ uid });
           this.ctx.body = { 
             code: 200, 
-            data: { 
-              username: res.username, 
-              uid: res.uid, 
-              phone: res.phone 
-            } 
+            data: {
+              uid: userData.uid,
+              sid,
+              username: userData.username,
+              phone: userData.phone,
+              intro: userData.intro,
+              gender: userData.gender,
+              city: userData.city,
+              email: userData.email,
+            }
           };
         }
       }

@@ -1,6 +1,7 @@
 'use strict';
 
 const Controller = require('egg').Controller;
+const fs = require('mz/fs');
 
 class EventController extends Controller {
   async findAll(){
@@ -59,6 +60,75 @@ class EventController extends Controller {
       console.log(err)
       this.ctx.body = { code: 422, data: err }
     }
+  };
+
+
+  async test(){
+    const file = this.ctx.request.files[0];
+    console.log(file)
+    // try{
+    //   const fileSize = fs.statSync(file.filepath).size;
+    //   const res = await this.ctx.curl(
+    //     `http://feedback.kuwo.cn/f/upload`,
+    //     {
+    //       method: 'POST',
+    //       files: {
+    //         file: file.filepath
+    //       },
+    //       headers: {
+    //         'content-type': 'multipart/form-data',
+    //         'content-length': fileSize,
+    //         'expect': '100-continue'
+    //       },
+    //       timeout: 1500,
+    //     },
+    //   );
+
+    //   if(file.filepath) {
+    //     await fs.unlink(file.filepath);
+    //     console.log('deleted')
+    //   }
+  
+    //   this.ctx.body = res
+    // } catch(err) {
+    //   console.log(err);
+    //   if(file.filepath) {
+    //     await fs.unlink(file.filepath);
+    //   }
+    //   this.ctx.body = err
+    // }
+
+
+    const axios = require('axios');
+    const FormData = require('form-data');
+
+    const form = new FormData();
+    const stream = fs.createReadStream(file.filepath);
+    form.append('file', stream);
+    console.log(fs.statSync(file.filepath))
+
+    try{
+      const res = await axios({
+          method: 'POST',
+          url: 'http://feedback.kuwo.cn/f/upload', 
+          data: form,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Content-Length': fs.statSync(file.filepath).size,
+          },
+      });
+      if(file.filepath) {
+        await fs.unlink(file.filepath);
+      }
+  
+      this.ctx.body = res
+    } catch(err) {
+      if(file.filepath) {
+        await fs.unlink(file.filepath);
+      }
+      this.ctx.body = err;
+    }
+
   }
 }
 

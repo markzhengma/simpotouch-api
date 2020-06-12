@@ -24,10 +24,14 @@ module.exports = appInfo => {
     },
   };
 
+  config.multipart = {
+    mode: 'file',
+  };
+
   config.wx = {
     appid: 'wx3a27f7cc03bce8d9',
     secret: '88557736e0ec52183420079f487ec294'
-  }
+  };
 
   config.keychain = {
     user: {
@@ -36,7 +40,7 @@ module.exports = appInfo => {
     session: {
       key: 'simpotouch_2020'
     }
-  }
+  };
 
   return {
     ...config,
